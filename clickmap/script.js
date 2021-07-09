@@ -21,7 +21,7 @@ const heatmapApp = (function () {
       if (y < 0) y = 0;
       if (y + x2 > height) y = height - x2;
       // get the image data for the mouse movement area
-      let image = ctx.getImageData(x, y, x, x),
+      let image = ctx.getImageData(x - radius2, y - radius2, x, x),
         // some performance tweaks
         imageData = image.data,
         length = imageData.length;
@@ -60,7 +60,7 @@ const heatmapApp = (function () {
       }
       // the rgb data manipulation didn't affect the ImageData object(defined on the top)
       // after the manipulation process we have to set the manipulated data to the ImageData object
-      ctx.putImageData(image, x, y);
+      ctx.putImageData(image, x - radius2, y - radius2);
     },
     // this handler is listening to the click event of the user
     clickEvent = function (ev) {
@@ -84,7 +84,7 @@ const heatmapApp = (function () {
       ctx.fillStyle = rgr;
       ctx.fillRect(x - r2, y - r2, 2 * r2, 2 * r2);
       // at least colorize the area
-      colorize(x - r2, y - r2, 2 * r2);
+      colorize(x, y, 2 * r2);
     };
 
   return {

@@ -27,7 +27,7 @@ const coordinates = [
   [339, 261],
   [434, 225],
   [326, 106],
-  [13, 148],
+  [0, 0],
   [108, 355],
   [134, 405],
   [117, 459],
@@ -86,9 +86,16 @@ const coordinates = [
   [448, 105],
   [312, 270],
   [290, 345],
-  [247, 439],
-  [248, 440],
+  [100, 439],
+  [118, 440],
 ];
+
+// [pageX / window.innerWidth, pageY / window.innerHeight] の値を入れる
+const PercentOfCoordinates = [];
+for (let [x, y] of coordinates) {
+  PercentOfCoordinates.push([x / 1024, y / 577]);
+}
+console.log(PercentOfCoordinates);
 
 const radius1 = 1;
 const radius2 = 10;
@@ -106,16 +113,15 @@ const createHeatMap = function (coordinates) {
   for (let [x, y] of coordinates) {
     // create a radial gradient with the defined parameters. we want to draw an alphamap
     let rgr = ctx.createRadialGradient(x, y, radius1, x, y, radius2);
-    console.log(rgr);
     // the center of the radial gradient has .1 alpha value
-    rgr.addColorStop(0, "rgba(0,0,0,0.2)");
+    rgr.addColorStop(0, "rgba(0,0,0,0.5)");
     // and it fades out to 0
     rgr.addColorStop(1, "rgba(0,0,0,0)");
     // drawing the gradient
     ctx.fillStyle = rgr;
     ctx.fillRect(x - radius2, y - radius2, 2 * radius2, 2 * radius2);
     // at least colorize the area
-    colorize(x - radius2, y - radius2);
+    colorize(x, y);
   }
 };
 
@@ -124,11 +130,15 @@ createHeatMap(coordinates);
 // function for coloring the heatmap
 function colorize(x, y) {
   // get the image data for the click area
-  let image = ctx.getImageData(x, y, x, x),
+  let image = ctx.getImageData(
+      x - radius2,
+      y - radius2,
+      2 * radius2,
+      2 * radius2
+    ),
     // some performance tweaks
     imageData = image.data,
     length = imageData.length;
-
   // loop thru the area
   for (let i = 3; i < length; i += 4) {
     let r = 0,
@@ -163,5 +173,5 @@ function colorize(x, y) {
   }
   // the rgb data manipulation didn't affect the ImageData object(defined on the top)
   // after the manipulation process we have to set the manipulated data to the ImageData object
-  ctx.putImageData(image, x, y);
+  ctx.putImageData(image, x - radius2, y - radius2);
 }
